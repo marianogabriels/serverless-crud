@@ -1,24 +1,25 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const uuid = require('uuid');
+var MongoClient = require('mongodb').MongoClient;
 
 module.exports = (event, callback) => {
   const data = JSON.parse(event.body);
 
-  data.id = uuid.v1();
   data.updatedAt = new Date().getTime();
 
   const params = {
-    TableName: 'todos',
-    Item: data
+      TableName: 'todos',
+      Item: data
   };
 
-  return dynamoDb.put(params, (error, data) => {
-    if (error) {
-      callback(error);
-    }
-    callback(error, params.Item);
-  });
+  return MongoClient.connect("mongodb://localhost:27017/todos_list", (err, db) => {
+      if(err) { 
+          callback(error)
+      }
+      console.log("###############" + params.Item)
+      var collection = db.collection('todos');
+      collection.insertOne(params.Item,{w: 1}, (err, result) => {
+          callback(err,params.Item)
+      });
+  })
 };
