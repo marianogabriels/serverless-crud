@@ -1,5 +1,10 @@
 service: serverless-crud
 
+plugins:
+  - serverless-offline
+  - serverless-mocha-plugin
+
+
 provider:
   name: aws
   runtime: nodejs4.3
@@ -18,6 +23,10 @@ provider:
       Resource: "arn:aws:dynamodb:us-east-1:*:*"
 
 functions:
+  todos-create.js:
+    handler: handler.js
+  functionName:
+    handler: handler
   create:
     handler: handler.create
     events:
